@@ -45,21 +45,21 @@ real(4) :: sfobar, sthray, soza, sawv, sao, saco2
 atmo25b = trim(data_directory)//'/atmo25b.dat'
 
 ! Atmospheric data file
-!open(4, file=trim(atmo25b), status='old', form='formatted')
-!read(4,'(a80)') title
-!read(4,'(a80)') title
-!read(4,'(a80)') title
-!read(4,'(a80)') title
-!do nl = 1, nlt
-!  read(4,'(i5,6f11.4)') ilam, sfobar, sthray, soza, sawv, sao, saco2
-!  fobar(nl) = real(sfobar, kind=kind_real)
-!  thray(nl) = real(sthray, kind=kind_real)
-!  oza(nl)   = real(soza,   kind=kind_real)
-!  awv(nl)   = real(sawv,   kind=kind_real)
-!  ao(nl)    = real(sao,    kind=kind_real)
-!  aco2(nl)  = real(saco2,  kind=kind_real)
-!enddo
-!close(4)
+open(4, file=trim(atmo25b), status='old', form='formatted')
+read(4,'(a80)') title
+read(4,'(a80)') title
+read(4,'(a80)') title
+read(4,'(a80)') title
+do nl = 1, nlt
+  read(4,'(i5,6f11.4)') ilam, sfobar, sthray, soza, sawv, sao, saco2
+  fobar(nl) = real(sfobar, kind=kind_real)
+  thray(nl) = real(sthray, kind=kind_real)
+  oza(nl)   = real(soza,   kind=kind_real)
+  awv(nl)   = real(sawv,   kind=kind_real)
+  ao(nl)    = real(sao,    kind=kind_real)
+  aco2(nl)  = real(saco2,  kind=kind_real)
+enddo
+close(4)
 
 end subroutine lidatatm
 

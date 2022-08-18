@@ -20,6 +20,7 @@ endmacro()
 list( APPEND data_files
   data/abw25_morel.dat
   data/acbc25_6.dat
+  data/atmo25b.dat
   data/pic_sigma.dat
   data/slingo.dat
 )
