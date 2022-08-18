@@ -10,12 +10,11 @@ module oasim_constants_mod
 use, intrinsic :: iso_c_binding
 
 implicit none
-
 public
 
 ! Type
-integer, parameter :: kind_int=c_int
-integer, parameter :: kind_real=c_double
+integer, parameter :: kind_int = c_int
+integer, parameter :: kind_real = c_double
 
 ! comlte
 integer, parameter :: nlt = 33

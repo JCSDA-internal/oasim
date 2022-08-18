@@ -16,7 +16,6 @@ use setsfclte_mod, only: setsfclte
 use sfcirr_mod,    only: sfcirr
 
 implicit none
-
 private
 public oasim
 
@@ -77,7 +76,7 @@ subroutine run(self)
 class(oasim), intent(in) :: self
 
 ! Locals
-integer :: i, j, lm
+integer :: lm
 logical :: is_midnight
 real(kind=kind_real) :: daycor, cosz, slp, wspd, ozone, wvapor, relhum
 real(kind=kind_real) :: ta(nlt), wa(nlt), asym(nlt), ed(nlt), es(nlt)
