@@ -70,111 +70,110 @@ end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine run(self)
+subroutine run(self, km, dt, is_midnight, day_of_year, cosz, slp, wspd, ozone, wvapor, rh, cov, &
+               cldtau, clwp, cldre, ta_in, wa_in, asym, dh, cdet, pic, cdc, diatom, chloro, cyano, &
+               cocco, dino, phaeo, tirrq, cdomabsq, avgq)
 
 ! Arguments
-class(oasim), intent(in) :: self
+class(oasim),         intent(in)  :: self         ! oasim object
+integer,              intent(in)  :: km           ! Number of model levels
+real(kind=kind_real), intent(in)  :: dt           ! Time interval
+logical,              intent(in)  :: is_midnight  ! Number of model levels
+integer,              intent(in)  :: day_of_year  ! Day of the year
+real(kind=kind_real), intent(in)  :: cosz         ! Cosine of the solar zenith angle (1)
+real(kind=kind_real), intent(in)  :: slp          ! Sea level pressure (hPa)
+real(kind=kind_real), intent(in)  :: wspd         ! Surface_wind_speed (m s-1)
+real(kind=kind_real), intent(in)  :: ozone        ! Ozone thickness (dobson units)
+real(kind=kind_real), intent(in)  :: wvapor       ! Water vapor (cm)
+real(kind=kind_real), intent(in)  :: rh           ! Relative humidity (percent)
+real(kind=kind_real), intent(in)  :: cov          ! Cloud cover (percent)
+real(kind=kind_real), intent(in)  :: cldtau       ! Cloud optical thickness (dimensionless)
+real(kind=kind_real), intent(in)  :: clwp         ! Cloud liquid water path (dimensionless)
+real(kind=kind_real), intent(in)  :: cldre        ! Cloud droplet effective radius (dimensionless)
+real(kind=kind_real), intent(in)  :: ta_in(nlt)   ! Aerosol optical thickness (dimensionless)
+real(kind=kind_real), intent(in)  :: wa_in(nlt)   ! Single scattering albedo (dimensionless)
+real(kind=kind_real), intent(in)  :: asym(nlt)    ! Asymmetry parameter (dimensionless)
+real(kind=kind_real), intent(in)  :: dh(km)       ! Layer thickness (m)
+real(kind=kind_real), intent(in)  :: cdet(km)     ! Carbon/nitrogen_detritus_concentration ()
+real(kind=kind_real), intent(in)  :: pic(km)      ! Particulate inorganic carbon (ugC l-1)
+real(kind=kind_real), intent(in)  :: cdc(km)      ! Colored dissolved organic carbon (uM)
+real(kind=kind_real), intent(in)  :: diatom(km)   ! Diatom concentration (mg m-3)
+real(kind=kind_real), intent(in)  :: chloro(km)   ! chlorophyte_concentration (mg m-3)
+real(kind=kind_real), intent(in)  :: cyano(km)    ! Cyano-bacteria concentration (mg m-3)
+real(kind=kind_real), intent(in)  :: cocco(km)    ! Coccolithophore concentration (mg m-3)
+real(kind=kind_real), intent(in)  :: dino(km)     ! Dinoflagellate concentration (mg m-3)
+real(kind=kind_real), intent(in)  :: phaeo(km)    ! Phaeocystis concentration (mg m-3)
+real(kind=kind_real), intent(out) :: tirrq(km)    ! Total irradiance (umol quanta m-2 s-1)
+real(kind=kind_real), intent(out) :: cdomabsq(km) ! Absorption of quanta by CDOM (umol quanta m-2 s-1)
+real(kind=kind_real), intent(out) :: avgq(km)     ! Average quantum irradiance (Average quantum irradiance)
 
 ! Locals
-integer :: lm
-logical :: is_midnight
-real(kind=kind_real) :: daycor, cosz, slp, wspd, ozone, wvapor, relhum
-real(kind=kind_real) :: ta(nlt), wa(nlt), asym(nlt), ed(nlt), es(nlt)
-real(kind=kind_real) :: cov, cldtau, clwp, cldre, sunz, rod(nlt), ros(nlt), dt
-real(kind=kind_real), allocatable :: dh(:), cdet(:), pic(:), cdc(:), tirrq(:), cdomabsq(:), avgq(:)
+integer :: lm, nl
+real(kind=kind_real) :: relhum, daycor, rday, sunz
+real(kind=kind_real) :: ed(nlt), es(nlt), rod(nlt), ros(nlt), ta(nlt), wa(nlt)
 real(kind=kind_real), allocatable :: phyto(:,:)
 
-!
-!! Use Beer's Law to compute flux divergence
-!!------------------------------------------
-!uvr = (pruvf+pruvr)*fr
-!par = (prpaf+prpar)*fr
-!z   = 0.0
-!
-!if ( associated(qsw) ) then
-!  qsw(:,:,1) = uvr + par
-!
-!  do l=2,lm
-!    z = z + dh(:,:,l-1)
-!    qsw(:,:,l  ) = uvr*exp(-kuvr*z) + par*exp(-kpar*z)
-!    qsw(:,:,l-1) = qsw(:,:,l-1) - qsw(:,:,l)
-!  enddo
-!  z = z + dh(:,:,lm)
-!  qsw(:,:,lm) = qsw(:,:,lm) - (uvr*exp(-kuvr*z) + par*exp(-kpar*z))
-!end if
-!
-!if( .not. associated(kparx) ) deallocate(kpar)
-!deallocate(z   )
-!deallocate(par )
-!deallocate(uvr )
-!
-!
-!hr=1.0
-!! Obtain Earth-Sun distance
-!    rday = float(DOY) + hr/24.0
-!    daycor = (1.0+1.67E-2*cos(self%pi2*(rday-3.0)/365.0))**2
-!!   if (Is_Leap)daycor = (1.0+1.67E-2*cos(self%pi2*(rday-3.0)/366.0))**2
-!!
-!do j = 1, JM
-!  do i = 1, IM
-!      if (DH(i,j,1) < 1.0E10 .and. COSZ(i,j) > 0.0)then
-!       slp = PS(i,j)*0.01  ! convert from Pa to mbar
-!       wspd = WSM(i,j)
-!       ozone = OZ(i,j)
-!       wvapor = WV(i,j)
-!       relhum = RH(i,j)
-!       do nl = 1,nlt
-!        ta(nl) = TAUA(nl)%b(i,j)
-!        wa(nl) = SSALB(nl)%b(i,j)
-!        asym(nl) = ASYMP(nl)%b(i,j)
-!       enddo
-!       cov = CCOV(i,j)
-!       cldtau = CLDTC(i,j)
-!       clwp = RLWP(i,j)
-!       cldre = CDRE(i,j)
-!
-!      ! There are mismatches between the ocean, land and atmosphere in GEOS-5
-!      ! and live ocean points for MOM that do not have a corresponding
-!      ! atmosphere.  These are called "grottoes" because they are assumed
-!      ! to have ocean underneath with land overhead.  Set irradiance to 0
-!      ! to represent this condition.
-!      if (slp < 0.0 .or. slp >1.0E10)then
-!        Ed = 0.0
-!        Es = 0.0
-!        TIRRQ(i,j,:) = 0.0
-!        CDOMABSQ(i,j,:) = 0.0
-!        AVGQ(i,j,:) = 0.0
-!      else
-!        ! Spectral irradiance just above surface
-        call sfcirr(self%lam, self%fobar, self%thray, self%oza, self%awv, self%ao, self%aco2, &
-                    self%asl, self%bsl, self%csl, self%dsl, self%esl, self%fsl, self%ica, daycor, &
-                    cosz, slp, wspd, ozone, wvapor, relhum, ta, wa, asym, self%am, self%vi, &
-                    cov, cldtau, clwp, cldre, ed, es)
-!
-!!   Spectral irradiance just below surface
-!        sunz = acos(COSZ(i,j))*self%rad
-        call ocalbedo(self%rad, self%wfac, sunz, wspd, rod, ros)
-!        do nl = 1,nlt
-!         Ed(nl) = Ed(nl)*(1.0-rod(nl))
-!         Es(nl) = Es(nl)*(1.0-ros(nl))
-!        enddo
-!
-!        PHYTO(:,1) = DIATOM(i,j,:)
-!        PHYTO(:,2) = CHLORO(i,j,:)
-!        PHYTO(:,3) = CYANO(i,j,:)
-!        PHYTO(:,4) = COCCO(i,j,:)
-!        PHYTO(:,5) = DINO(i,j,:)
-!        PHYTO(:,6) = PHAEO(i,j,:)
-!!   Spectral irradiance in the water column
-        call glight(lm, is_midnight, cosz, self%lam, self%aw, self%bw, self%ac, self%bc, &
-                    self%bpic, self%excdom, self%exdet, self%wtoq, ed, es, dh, phyto, &
-                    cdet, pic, cdc, tirrq, cdomabsq, avgq, dt)
-!!TIRRQ(i,j,:) = 1.0
-!!CDOMABSQ(i,j,:) = 0.0
-!       endif
-!      endif
-!     enddo
-!    enddo
+
+! Set the phyto variable
+! ----------------------
+allocate(phyto(lm,ntyp))
+phyto(:,1) = diatom
+phyto(:,2) = chloro
+phyto(:,3) = cyano
+phyto(:,4) = cocco
+phyto(:,5) = dino
+phyto(:,6) = phaeo
+
+! Obtain Earth-Sun distance
+! -------------------------
+rday = real(day_of_year, kind=kind_real) + 1.0_kind_real/24.0_kind_real
+daycor = (1.0_kind_real + 1.67e-2_kind_real * cos(self%pi2*(rday-3.0_kind_real)/365.0_kind_real))**2
+
+if (dh(1) < 1.0e10_kind_real .and. cosz > 0.0_kind_real) then
+
+  ! There are mismatches between the ocean, land and atmosphere in GEOS-5 and live ocean points for
+  ! MOM that do not have a corresponding atmosphere.  These are called "grottoes" because they are
+  ! assumed to have ocean underneath with land overhead.  Set irradiance to 0 to represent this
+  ! condition.
+
+  if (slp < 0.0_kind_real .or. slp > 1.0e10_kind_real) then
+
+    ed = 0.0_kind_real
+    es = 0.0_kind_real
+    tirrq(:) = 0.0_kind_real
+    cdomabsq(:) = 0.0_kind_real
+    avgq(:) = 0.0_kind_real
+
+  else
+
+    ! Copy the variables that are modified for internal purposes
+    relhum = rh
+    ta = ta_in
+    wa = wa_in
+
+    ! Spectral irradiance just above surface
+    call sfcirr(self%lam, self%fobar, self%thray, self%oza, self%awv, self%ao, self%aco2, &
+                self%asl, self%bsl, self%csl, self%dsl, self%esl, self%fsl, self%ica, daycor, &
+                cosz, slp, wspd, ozone, wvapor, relhum, ta, wa, asym, self%am, self%vi, cov, &
+                cldtau, clwp, cldre, ed, es)
+
+    ! Spectral irradiance just below surface
+    sunz = acos(cosz)*self%rad
+    call ocalbedo(self%rad, self%wfac, sunz, wspd, rod, ros)
+
+    do nl = 1,nlt
+      ed(nl) = ed(nl) * (1.0_kind_real - rod(nl))
+      es(nl) = es(nl) * (1.0_kind_real - ros(nl))
+    enddo
+
+    ! Spectral irradiance in the water column
+    call glight(lm, is_midnight, cosz, self%lam, self%aw, self%bw, self%ac, self%bc, self%bpic, &
+                self%excdom, self%exdet, self%wtoq, ed, es, dh, phyto, cdet, pic, cdc, tirrq, &
+                cdomabsq, avgq, dt)
+
+  endif
+
+endif
 
 end subroutine run
 
