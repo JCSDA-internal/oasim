@@ -55,7 +55,7 @@ real(kind=kind_real) :: dray, daer
 ! First time only
 if (ifst .eq. 0)then
   do nl = 1,nlt
-    rlamu(nl) = float(lam(nl))*1.0E-3_kind_real    !lambda in um
+    rlamu(nl) = real(lam(nl), kind=kind_real)*1.0e-3_kind_real    !lambda in um
     Td(nl) = 0.0_kind_real
     Ts(nl) = 0.0_kind_real
   enddo

@@ -127,7 +127,7 @@ do k = 1,km
       ! Detritus optics
       Plte = max(P(k,nds),0.0_kind_real)
       adet = Plte*adstar*exdet(nl)
-      bdet = Plte*bdstar*(555.0_kind_real/float(lam(nl))**0.5_kind_real)
+      bdet = Plte*bdstar*(555.0_kind_real/real(lam(nl), kind=kind_real)**0.5_kind_real)
       a  = aw(nl) + acdom(nl) + actot + adet
       ! bt = bw(nl) + bctot + bdet
       ! bb = bbrw*bw(nl) + bbctot + bbrd*bdet
