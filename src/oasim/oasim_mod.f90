@@ -20,21 +20,19 @@ private
 public oasim
 
 type :: oasim
-  integer :: lam(nlt)
-  real(kind=kind_real) :: aw(nlt), bw(nlt), excdom(nlt), exdet(nlt), wtoq(nlt), wfac(nlt)
-  real(kind=kind_real) :: ac(nchl,nlt), bc(nchl,nlt)
-  real(kind=kind_real) :: bpic(nlt)
-  real(kind=kind_real) :: rad, pi2
-  real(kind=kind_real) :: fobar(nlt), thray(nlt), oza(nlt), awv(nlt), ao(nlt), aco2(nlt)
-  real(kind=kind_real) :: am, vi
-  real(kind=kind_real) :: asl(ncld), bsl(ncld), csl(ncld), dsl(ncld), esl(ncld), fsl(ncld)
-  integer :: ica(nlt)
+  integer, allocatable :: lam(:),  ica(:)
+  real(kind=kind_real) :: rad, pi2, am, vi
+  real(kind=kind_real), allocatable :: aw(:), bw(:), excdom(:), exdet(:), wtoq(:), wfac(:)
+  real(kind=kind_real), allocatable :: fobar(:), thray(:), oza(:), awv(:), ao(:), aco2(:), bpic(:)
+  real(kind=kind_real), allocatable :: ac(:,:), bc(:,:)
+  real(kind=kind_real), allocatable :: asl(:), bsl(:), csl(:), dsl(:), esl(:), fsl(:)
   contains
     procedure, public :: create
     procedure, public :: delete
     procedure, public :: run
     final :: dummy_final
 endtype oasim
+
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -47,6 +45,32 @@ subroutine create(self, data_directory)
 ! Arguments
 class(oasim),     intent(inout) :: self
 character(len=*), intent(in)    :: data_directory  ! Path to where datafiles are stored
+
+! Allocate the oasim structures
+! -----------------------------
+allocate(self%lam(nlt))
+allocate(self%ica(nlt))
+allocate(self%aw(nlt))
+allocate(self%bw(nlt))
+allocate(self%excdom(nlt))
+allocate(self%exdet(nlt))
+allocate(self%wtoq(nlt))
+allocate(self%wfac(nlt))
+allocate(self%fobar(nlt))
+allocate(self%thray(nlt))
+allocate(self%oza(nlt))
+allocate(self%awv(nlt))
+allocate(self%ao(nlt))
+allocate(self%aco2(nlt))
+allocate(self%bpic(nlt))
+allocate(self%ac(nchl,nlt))
+allocate(self%bc(nchl,nlt))
+allocate(self%asl(ncld))
+allocate(self%bsl(ncld))
+allocate(self%csl(ncld))
+allocate(self%dsl(ncld))
+allocate(self%esl(ncld))
+allocate(self%fsl(ncld))
 
 ! Construct the oasim structures
 ! ------------------------------
@@ -61,10 +85,35 @@ end subroutine create
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine delete(oasimobj)
+subroutine delete(self)
 
 ! Arguments
-class(oasim), intent(inout) :: oasimobj
+class(oasim), intent(inout) :: self
+
+! Deallocate the oasim structures
+! -------------------------------
+deallocate(self%lam)
+deallocate(self%aw)
+deallocate(self%bw)
+deallocate(self%excdom)
+deallocate(self%exdet)
+deallocate(self%wtoq)
+deallocate(self%wfac)
+deallocate(self%ac)
+deallocate(self%bc)
+deallocate(self%bpic)
+deallocate(self%fobar)
+deallocate(self%thray)
+deallocate(self%oza)
+deallocate(self%awv)
+deallocate(self%ao)
+deallocate(self%aco2)
+deallocate(self%asl)
+deallocate(self%bsl)
+deallocate(self%csl)
+deallocate(self%dsl)
+deallocate(self%esl)
+deallocate(self%fsl)
 
 end subroutine delete
 

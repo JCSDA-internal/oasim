@@ -80,7 +80,7 @@ character(len=*),     intent(in)  :: data_directory
 integer :: n, nl, nc, lamcld
 character(len=50) :: title
 real(kind=kind_real) :: rnl1(ncld), rnl2(ncld)
-real(4) :: rn1, rn2, a4, b4, c4, d4, e4, f4
+real(4) :: rn1, rn2, a4, b4, e4, f4, c4, d4
 character(len=2048) :: slingo
 
 slingo = trim(data_directory)//'/slingo.dat'

@@ -1,5 +1,5 @@
 # Created directories
-build/
+build*/
 
 # Prerequisites
 *.d
