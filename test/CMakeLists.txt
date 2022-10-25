@@ -29,7 +29,7 @@ list( APPEND data_files
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/data/)
 
 # Link data to test directory
-LINK_FILES( "${data_files}" ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+LINK_FILES( "${data_files}" ${CMAKE_CURRENT_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR})
 
 # Compile executable
 ecbuild_add_executable( TARGET  test_oasim.x
