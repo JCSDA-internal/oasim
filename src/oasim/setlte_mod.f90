@@ -54,7 +54,7 @@ real(kind=kind_real), parameter :: b3 = -2.698E-9_kind_real
 ! Sets parameters for ocean irradiance.
 
 ! Obtain Light data
-!call lidata(lam, aw, bw, ac, bc, bpic, data_directory)
+call lidata(lam, aw, bw, ac, bc, bpic, data_directory)
 
 ! Quanta conversion
 planck = 6.6256E-34_kind_real   !Plancks constant J sec
