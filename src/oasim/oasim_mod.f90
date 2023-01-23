@@ -28,7 +28,7 @@ type :: oasim
   real(kind=kind_real), allocatable :: asl(:), bsl(:), csl(:), dsl(:), esl(:), fsl(:)
   contains
     procedure, public :: create
-    procedure, public :: cancel
+    procedure, public :: delete
     procedure, public :: run
     final :: dummy_final
 endtype oasim
@@ -85,7 +85,7 @@ end subroutine create
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine cancel(self)
+subroutine delete(self)
 
 ! Arguments
 class(oasim), intent(inout) :: self
@@ -115,7 +115,7 @@ deallocate(self%dsl)
 deallocate(self%esl)
 deallocate(self%fsl)
 
-end subroutine cancel
+end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
 

@@ -13,6 +13,6 @@ print*, 'Running oasim test'
 call oasim_obj%create('data')
 
 ! Run the deallocate
-call oasim_obj%cancel()
+call oasim_obj%delete()
 
 end program oasim_test
