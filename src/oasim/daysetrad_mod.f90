@@ -35,6 +35,9 @@ integer :: k
 ! Parameters
 real(kind=kind_real), parameter :: sday=86400.0_kind_real  !seconds per day
 
+!Initialize avgq 
+avgq(:) = 1.0_kind_real
+
 ! Compute average quanta; Initialize light history arrays
 do k = 1,km
   avgq(k) = avgq(k)*sday/dt

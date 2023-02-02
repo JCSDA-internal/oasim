@@ -157,7 +157,7 @@ real(kind=kind_real), intent(out) :: cdomabsq(km) ! Absorption of quanta by CDOM
 real(kind=kind_real), intent(out) :: avgq(km)     ! Average quantum irradiance (Average quantum irradiance)
 
 ! Locals
-integer :: lm, nl
+integer :: nl
 real(kind=kind_real) :: relhum, daycor, rday, sunz
 real(kind=kind_real) :: ed(nlt), es(nlt), rod(nlt), ros(nlt), ta(nlt), wa(nlt)
 real(kind=kind_real), allocatable :: phyto(:,:)
@@ -165,7 +165,7 @@ real(kind=kind_real), allocatable :: phyto(:,:)
 
 ! Set the phyto variable
 ! ----------------------
-allocate(phyto(lm,ntyp))
+allocate(phyto(km,6))
 phyto(:,1) = diatom
 phyto(:,2) = chloro
 phyto(:,3) = cyano
@@ -216,10 +216,9 @@ if (dh(1) < 1.0e10_kind_real .and. cosz > 0.0_kind_real) then
     enddo
 
     ! Spectral irradiance in the water column
-    call glight(lm, is_midnight, cosz, self%lam, self%aw, self%bw, self%ac, self%bc, self%bpic, &
+    call glight(km, is_midnight, cosz, self%lam, self%aw, self%bw, self%ac, self%bc, self%bpic, &
                 self%excdom, self%exdet, self%wtoq, ed, es, dh, phyto, cdet, pic, cdc, tirrq, &
                 cdomabsq, avgq, dt)
-
   endif
 
 endif
