@@ -82,7 +82,7 @@ deltaE(:) = 0.0_kind_real
 acdom(:) = 0.0_kind_real
 avgq(:) = 0.0_kind_real
 Ebot = 0.0_kind_real
-bbrw    = 1.0_kind_real ! we need to confirm with Cecile
+bbrw    = 0.5_kind_real ! we need to confirm with Cecile
 
 do nl = 1,nlt
 !do nl = npst,npnd
