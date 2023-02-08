@@ -76,12 +76,14 @@ real(kind=kind_real), parameter :: dmax      = 500.0_kind_real     !depth at whi
 
 !  Constants and initialize
 rmus = 1.0_kind_real/0.83_kind_real            !avg cosine diffuse down
-tirrq = 0.0_kind_real
-cdomabsq = 0.0_kind_real
-deltaE = 0.0_kind_real
-acdom = 0.0_kind_real
-
+tirrq(:) = 0.0_kind_real
+cdomabsq(:) = 0.0_kind_real
+deltaE(:) = 0.0_kind_real
+acdom(:) = 0.0_kind_real
+avgq(:) = 0.0_kind_real
 Ebot = 0.0_kind_real
+bbrw    = 0.5_kind_real ! we need to confirm with Cecile
+
 do nl = 1,nlt
 !do nl = npst,npnd
   Edtop(nl) = Ed(nl)
