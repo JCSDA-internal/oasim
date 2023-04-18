@@ -14,6 +14,7 @@ use ocalbedo_mod,  only: ocalbedo
 use setlte_mod,    only: setlte
 use setsfclte_mod, only: setsfclte
 use sfcirr_mod,    only: sfcirr
+use rlwn_mod,    only: rlwn
 
 implicit none
 private
@@ -121,7 +122,7 @@ end subroutine delete
 
 subroutine run(self, km, dt, is_midnight, day_of_year, cosz, slp, wspd, ozone, wvapor, rh, cov, &
                cldtau, clwp, cldre, ta_in, wa_in, asym, dh, cdet, pic, cdc, diatom, chloro, cyano, &
-               cocco, dino, phaeo, tirrq, cdomabsq, avgq)
+               cocco, dino, phaeo, tirrq, cdomabsq, avgq, rlwnref)
 
 ! Arguments
 class(oasim),         intent(in)  :: self         ! oasim object
@@ -155,11 +156,12 @@ real(kind=kind_real), intent(in)  :: phaeo(km)    ! Phaeocystis concentration (m
 real(kind=kind_real), intent(out) :: tirrq(km)    ! Total irradiance (umol quanta m-2 s-1)
 real(kind=kind_real), intent(out) :: cdomabsq(km) ! Absorption of quanta by CDOM (umol quanta m-2 s-1)
 real(kind=kind_real), intent(out) :: avgq(km)     ! Average quantum irradiance (Average quantum irradiance)
+real(kind=kind_real), intent(out) :: rlwnref(nlt)     !
 
 ! Locals
 integer :: nl
 real(kind=kind_real) :: relhum, daycor, rday, sunz
-real(kind=kind_real) :: ed(nlt), es(nlt), rod(nlt), ros(nlt), ta(nlt), wa(nlt)
+real(kind=kind_real) :: ed(nlt), es(nlt), rod(nlt), ros(nlt), ta(nlt), wa(nlt), sfceu(nlt)
 real(kind=kind_real), allocatable :: phyto(:,:)
 
 
@@ -219,6 +221,9 @@ if (dh(1) < 1.0e10_kind_real .and. cosz > 0.0_kind_real) then
     call glight(km, is_midnight, cosz, self%lam, self%aw, self%bw, self%ac, self%bc, self%bpic, &
                 self%excdom, self%exdet, self%wtoq, ed, es, dh, phyto, cdet, pic, cdc, tirrq, &
                 cdomabsq, avgq, dt)
+
+    call rlwn(km, self%lam, cosz, self%aw, self%bw, self%ac,self%bc, self%bpic, self%wtoq, ed, es, dh, &
+         phyto, self%excdom, self%exdet, cdet, pic, cdc, rlwnref)
   endif
 
 endif
