@@ -80,7 +80,6 @@ rmus = 1.0_kind_real/0.83_kind_real            !avg cosine diffuse down
 tirrq(:) = 0.0_kind_real
 cdomabsq(:) = 0.0_kind_real
 deltaE(:) = 0.0_kind_real
-y=0.0_kind_real
 acdom(:) = 0.0_kind_real
 avgq(:) = 0.0_kind_real
 Ebot = 0.0_kind_real
@@ -92,7 +91,7 @@ do nl = 1,nlt
   Estop(nl) = Es(nl)
   Ebot = Ebot + (Ed(nl)+Es(nl))
 enddo
-print *, "edue Ed *", nlt, nchl, Ed, " Es *" , Es, "km", km
+
 !  Convert to quanta: divide by Avos # to get moles quanta; then mult by
 !  1E6 to get uM or uEin
 Ebotq = 0.0_kind_real
@@ -105,7 +104,7 @@ do k = 1,km
   if (H(k) < 1.0E10_kind_real)then
     Etop = Ebot
     Etopq = Ebotq
-    print *, "Ebotq=   ", Ebotq, "Etop ", Etop, " k", k, "H(k) ", H(k)
+
     zd = min(Dmax,H(k))
     zirr = 0.0_kind_real
     zirrq = 0.0_kind_real
@@ -127,33 +126,26 @@ do k = 1,km
         bctot  = bctot  + Plte*bc(n,nl)
         bbctot = bbctot + Plte*bbrc(n)*bc(n,nl)
       enddo
-      ! a  = aw(nl) + acdom(nl) + actot
-      ! bt = bw(nl) + bctot
-      ! bb = bbrw*bw(nl) + bbctot
-      ! Detritus optics
+
       Plte = max(P(k,nds),0.0_kind_real)
       adet = Plte*adstar*exdet(nl)
       bdet = Plte*bdstar*(555.0_kind_real/real(lam(nl), kind=kind_real)**0.5_kind_real)
       a  = aw(nl) + acdom(nl) + actot + adet
-      ! bt = bw(nl) + bctot + bdet
-      ! bb = bbrw*bw(nl) + bbctot + bbrd*bdet
-      ! Detritus and PIC scattering
+
       Plte3 = max(P(k,ncs+3),0.0_kind_real)
-      y=y+1
-      !print *, "actot  ", actot, " bbctot ", bbctot, " acdom ", acdom, " Plte ", Plte," Plte3 ", Plte3, "k", k, "nl", nl , "y", y
       bt = bw(nl) + bctot + bdet + bpic(nl)*Plte3
       bb = bbrw*bw(nl) + bbctot + bbrd*bdet + bbrpic*bpic(nl)*Plte3
       bb = max(bb,0.0002_kind_real)
-      !print *, " Edtop *",Edtop(nl), "Estop *" ,Estop(nl), "nl", nl, "k", k
+
       if (Edtop(nl) .ge. 1.0E-4_kind_real .or. Estop(nl) .ge. 1.0E-4_kind_real) then
-          !print *, "radmod edeu in ", "zd ",zd, "Edtop(nl) ",Edtop(nl), "Estop(nl)", Estop(nl), "rmud ",rmud, "a ",a
+
         call radmod(zd, Edtop(nl), Estop(nl), rmud, a, bt, bb, Edz(nl,k), Esz(nl,k), Euz(nl,k), sfceun(nl,k))
-        !print *, "radmod edeu out"
+
       endif
       Edtop(nl) = Edz(nl,k)
       Estop(nl) = Esz(nl,k)
       zirr = zirr + (Edz(nl,k)+Esz(nl,k)+Euz(nl,k))
-      !!!!!!!!!!
+      !
       sfceu(nl) = Edtop(nl)*sfceun(nl,k)
     enddo
     Ebot = zirr
@@ -172,7 +164,7 @@ do k = 1,km
     tirrq(k) = sqrt(Etopq*Ebotq)*rmus
   endif
 enddo
-print *, "edeu   ", "Etopq ", Etopq, "Ebotq  ", Ebotq, "rmus  ",rmus, "Edz  ", Edz, "Esz ",Esz , "Euz ",Euz, "WtoQ  ", WtoQ, "y", y
+
 ! Irradiance summary loops
 do k = 1,km
   avgq(k) = avgq(k) + tirrq(k)

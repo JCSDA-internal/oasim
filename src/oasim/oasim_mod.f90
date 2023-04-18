@@ -224,6 +224,7 @@ if (dh(1) < 1.0e10_kind_real .and. cosz > 0.0_kind_real) then
 
     call rlwn(km, self%lam, cosz, self%aw, self%bw, self%ac,self%bc, self%bpic, self%wtoq, ed, es, dh, &
          phyto, self%excdom, self%exdet, cdet, pic, cdc, rlwnref)
+
   endif
 
 endif
