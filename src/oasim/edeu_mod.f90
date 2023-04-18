@@ -55,7 +55,7 @@ real(kind=kind_real), intent(inout) :: avgq(km)
 real(kind=kind_real), intent(out)   :: sfceu(nlt)
 
 ! Locals
-integer :: k, n, nl, y
+integer :: k, n, nl
 real(kind=kind_real) :: acdom(nlt), Edtop(nlt),Estop(nlt)
 real(kind=kind_real) :: deltaE(km)
 real(kind=kind_real) :: Edz(nlt,km), Esz(nlt,km), Euz(nlt,km), sfceun(nlt,km)
@@ -99,12 +99,10 @@ do nl = 1,nlt
 !do nl = npst,npnd   !PAR range only 350-700nm
   Ebotq = Ebotq + (Edtop(nl)+Estop(nl))*WtoQ(nl)*1.0E6
 enddo
-
 do k = 1,km
   if (H(k) < 1.0E10_kind_real)then
     Etop = Ebot
     Etopq = Ebotq
-
     zd = min(Dmax,H(k))
     zirr = 0.0_kind_real
     zirrq = 0.0_kind_real
@@ -126,26 +124,21 @@ do k = 1,km
         bctot  = bctot  + Plte*bc(n,nl)
         bbctot = bbctot + Plte*bbrc(n)*bc(n,nl)
       enddo
-
       Plte = max(P(k,nds),0.0_kind_real)
       adet = Plte*adstar*exdet(nl)
       bdet = Plte*bdstar*(555.0_kind_real/real(lam(nl), kind=kind_real)**0.5_kind_real)
       a  = aw(nl) + acdom(nl) + actot + adet
-
       Plte3 = max(P(k,ncs+3),0.0_kind_real)
       bt = bw(nl) + bctot + bdet + bpic(nl)*Plte3
       bb = bbrw*bw(nl) + bbctot + bbrd*bdet + bbrpic*bpic(nl)*Plte3
       bb = max(bb,0.0002_kind_real)
-
       if (Edtop(nl) .ge. 1.0E-4_kind_real .or. Estop(nl) .ge. 1.0E-4_kind_real) then
-
         call radmod(zd, Edtop(nl), Estop(nl), rmud, a, bt, bb, Edz(nl,k), Esz(nl,k), Euz(nl,k), sfceun(nl,k))
-
       endif
       Edtop(nl) = Edz(nl,k)
       Estop(nl) = Esz(nl,k)
       zirr = zirr + (Edz(nl,k)+Esz(nl,k)+Euz(nl,k))
-      !
+      ! surface normalized upwelling irradiance
       sfceu(nl) = Edtop(nl)*sfceun(nl,k)
     enddo
     Ebot = zirr
