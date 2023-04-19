@@ -93,7 +93,6 @@ bs = rd*bb*rmus
 cs = as+bs
 bd = bb*rmud
 fd = (bt-bb)*rmud
-
 bquad = cs - cu
 cquad = bs*bu - cs*cu
 sqarg = bquad*bquad - 4.0_kind_real*cquad
@@ -111,12 +110,10 @@ esz = c2*ta2z + rm - rn
 esz = max(esz,0.0_kind_real)
 
 if (euz_flag) then
-
   eutmp = ((a2+cs)*c2)*ta2z + cs*rm - cs*rn - fd*edz
   euz = eutmp/bu
   euz = max(euz,0.0_kind_real)
 else
-
   euz = 0.0_kind_real
 endif
 
