@@ -82,6 +82,7 @@ cdomabsq(:) = 0.0_kind_real
 deltaE(:) = 0.0_kind_real
 acdom(:) = 0.0_kind_real
 avgq(:) = 0.0_kind_real
+sfceu(:)= 0.0_kind_real
 Ebot = 0.0_kind_real
 bbrw    = 0.5_kind_real ! we need to confirm with Cecile
 
@@ -111,6 +112,7 @@ do k = 1,km
       Edz(nl,k) = 0.0_kind_real
       Esz(nl,k) = 0.0_kind_real
       Euz(nl,k) = 0.0_kind_real
+      sfceun(nl,k) = 0.0_kind_real
       actot = 0.0_kind_real
       bctot = 0.0_kind_real
       bbctot = 0.0_kind_real

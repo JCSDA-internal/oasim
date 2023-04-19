@@ -218,12 +218,14 @@ if (dh(1) < 1.0e10_kind_real .and. cosz > 0.0_kind_real) then
     enddo
 
     ! Spectral irradiance in the water column
+
     call glight(km, is_midnight, cosz, self%lam, self%aw, self%bw, self%ac, self%bc, self%bpic, &
                 self%excdom, self%exdet, self%wtoq, ed, es, dh, phyto, cdet, pic, cdc, tirrq, &
                 cdomabsq, avgq, dt)
 
     call rlwn(km, self%lam, cosz, self%aw, self%bw, self%ac,self%bc, self%bpic, self%wtoq, ed, es, dh, &
          phyto, self%excdom, self%exdet, cdet, pic, cdc, rlwnref)
+
 
   endif
 
