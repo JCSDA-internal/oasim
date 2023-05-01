@@ -53,7 +53,7 @@ real(kind=kind_real), intent(in)  :: dt
 ! Locals
 integer :: k, n, nl
 real(kind=kind_real) :: p(km,ntyp), deltae(km)
-real(kind=kind_real) :: acdom(km,nlt)
+real(kind=kind_real) :: acdom(km,nlt), sfceu(nlt)
 real(kind=kind_real) :: sza, sinszaw, rmud, rmudl, szaw
 
 ! Parameters
@@ -87,7 +87,7 @@ rmud = max(rmud,0.0)
 
 !  Compute underwater irradiance and total quanta
 call edeu(km, lam, aw, bw, ac, bc, bpic, WtoQ, Ed, Es, H, P, excdom, exdet, rmud, tirrq, cdomabsq, &
-          avgq)
+          avgq, sfceu)
 
 end subroutine glight
 

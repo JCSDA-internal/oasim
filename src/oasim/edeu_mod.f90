@@ -22,7 +22,7 @@ contains
 ! --------------------------------------------------------------------------------------------------
 
 subroutine edeu(km, lam, aw, bw, ac, bc, bpic, WtoQ, Ed, Es, H, P, excdom, exdet, rmud, tirrq, &
-                cdomabsq, avgq)
+                cdomabsq, avgq, sfceu)
 
 ! Model of irradiance in the water column.  Accounts for three irradiance streams:
 
@@ -52,12 +52,13 @@ real(kind=kind_real), intent(in)    :: rmud
 real(kind=kind_real), intent(out)   :: tirrq(km)
 real(kind=kind_real), intent(out)   :: cdomabsq(km)
 real(kind=kind_real), intent(inout) :: avgq(km)
+real(kind=kind_real), intent(out)   :: sfceu(nlt)
 
 ! Locals
 integer :: k, n, nl
 real(kind=kind_real) :: acdom(nlt), Edtop(nlt),Estop(nlt)
 real(kind=kind_real) :: deltaE(km)
-real(kind=kind_real) :: Edz(nlt,km), Esz(nlt,km), Euz(nlt,km)
+real(kind=kind_real) :: Edz(nlt,km), Esz(nlt,km), Euz(nlt,km), sfceun(nlt,km)
 real(kind=kind_real) :: fchl(nchl)
 real(kind=kind_real) :: a, actot, adet, bb, bbctot, bbrw, bctot, bdet, bt, ebot, ebotq, etop, etopq
 real(kind=kind_real) :: Plte, plte3, rmus, sumq, zd, zirr, zirrq
@@ -81,6 +82,7 @@ cdomabsq(:) = 0.0_kind_real
 deltaE(:) = 0.0_kind_real
 acdom(:) = 0.0_kind_real
 avgq(:) = 0.0_kind_real
+sfceu(:)= 0.0_kind_real
 Ebot = 0.0_kind_real
 bbrw    = 0.5_kind_real ! we need to confirm with Cecile
 
@@ -110,6 +112,7 @@ do k = 1,km
       Edz(nl,k) = 0.0_kind_real
       Esz(nl,k) = 0.0_kind_real
       Euz(nl,k) = 0.0_kind_real
+      sfceun(nl,k) = 0.0_kind_real
       actot = 0.0_kind_real
       bctot = 0.0_kind_real
       bbctot = 0.0_kind_real
@@ -123,27 +126,22 @@ do k = 1,km
         bctot  = bctot  + Plte*bc(n,nl)
         bbctot = bbctot + Plte*bbrc(n)*bc(n,nl)
       enddo
-      ! a  = aw(nl) + acdom(nl) + actot
-      ! bt = bw(nl) + bctot
-      ! bb = bbrw*bw(nl) + bbctot
-      ! Detritus optics
       Plte = max(P(k,nds),0.0_kind_real)
       adet = Plte*adstar*exdet(nl)
       bdet = Plte*bdstar*(555.0_kind_real/real(lam(nl), kind=kind_real)**0.5_kind_real)
       a  = aw(nl) + acdom(nl) + actot + adet
-      ! bt = bw(nl) + bctot + bdet
-      ! bb = bbrw*bw(nl) + bbctot + bbrd*bdet
-      ! Detritus and PIC scattering
       Plte3 = max(P(k,ncs+3),0.0_kind_real)
       bt = bw(nl) + bctot + bdet + bpic(nl)*Plte3
       bb = bbrw*bw(nl) + bbctot + bbrd*bdet + bbrpic*bpic(nl)*Plte3
       bb = max(bb,0.0002_kind_real)
       if (Edtop(nl) .ge. 1.0E-4_kind_real .or. Estop(nl) .ge. 1.0E-4_kind_real) then
-        call radmod(zd, Edtop(nl), Estop(nl), rmud, a, bt, bb, Edz(nl,k), Esz(nl,k), Euz(nl,k))
+        call radmod(zd, Edtop(nl), Estop(nl), rmud, a, bt, bb, Edz(nl,k), Esz(nl,k), Euz(nl,k), sfceun(nl,k))
       endif
       Edtop(nl) = Edz(nl,k)
       Estop(nl) = Esz(nl,k)
       zirr = zirr + (Edz(nl,k)+Esz(nl,k)+Euz(nl,k))
+      ! surface normalized upwelling irradiance
+      sfceu(nl) = Edtop(nl)*sfceun(nl,k)
     enddo
     Ebot = zirr
     deltaE(k) = Etop - Ebot

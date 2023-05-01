@@ -24,7 +24,7 @@ contains
 ! scattering coefficients, and chl-specific absorption and total scattering data for several
 ! phytoplankton groups).  PAR (350-700) begins at index 3, and ends at index 17.
 
-subroutine radmod(zd, edtop, estop, rmud, a, bt, bb, edz, esz, euz, spinup_in)
+subroutine radmod(zd, edtop, estop, rmud, a, bt, bb, edz, esz, euz, sfceun, spinup_in)
 
 ! Model of irradiance in the water column.  Accounts for three
 ! irradiance streams:
@@ -54,6 +54,7 @@ real(kind=kind_real), intent(in)  :: bb
 real(kind=kind_real), intent(out) :: edz
 real(kind=kind_real), intent(out) :: esz
 real(kind=kind_real), intent(out) :: euz
+real(kind=kind_real), intent(out) :: sfceun
 logical, optional,    intent(in)  :: spinup_in
 
 ! Locals
@@ -115,6 +116,9 @@ if (euz_flag) then
 else
   euz = 0.0_kind_real
 endif
+
+!  Computes surface normalized upwelling irradiance.      
+sfceun = (a2+cd)/bu
 
 end subroutine radmod
 

@@ -24,6 +24,7 @@ list( APPEND oasim_src_files
   setsfclte_mod.f90
   sfcirr_mod.f90
   slingo_mod.f90
+  rlwn_mod.f90
 )
 
 ecbuild_add_library( TARGET   ${PROJECT_NAME}
