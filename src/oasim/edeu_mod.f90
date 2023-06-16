@@ -74,7 +74,7 @@ real(kind=kind_real), parameter :: bdstar    = 0.00115_kind_real   !Gallegos et 
 real(kind=kind_real), parameter :: acdomstar = 2.98E-4_kind_real   !Yacobi et al., 2003 m2/mg
 real(kind=kind_real), parameter :: dmax      = 500.0_kind_real     !depth at which Ed = 0
 
-
+print *, "edeu_mod00..."
 !  Constants and initialize
 rmus = 1.0_kind_real/0.83_kind_real            !avg cosine diffuse down
 tirrq(:) = 0.0_kind_real
@@ -92,7 +92,7 @@ do nl = 1,nlt
   Estop(nl) = Es(nl)
   Ebot = Ebot + (Ed(nl)+Es(nl))
 enddo
-
+print *, "edeu_mod0..."
 !  Convert to quanta: divide by Avos # to get moles quanta; then mult by
 !  1E6 to get uM or uEin
 Ebotq = 0.0_kind_real
@@ -164,7 +164,7 @@ enddo
 do k = 1,km
   avgq(k) = avgq(k) + tirrq(k)
 enddo
-
+print *, "rlwn_mod1..."
 end subroutine edeu
 
 ! --------------------------------------------------------------------------------------------------

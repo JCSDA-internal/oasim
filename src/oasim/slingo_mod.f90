@@ -75,20 +75,24 @@ Tcs = 0.0_kind_real
 ! Mean of Kiehl and Han
 re = (10.0_kind_real+11.8_kind_real)/2.0_kind_real
 remean = re
-
+print *, "slingo ..0",re
 ! Compute spectral cloud characteristics
 ! If MODIS re is available use it; otherwise use parameterized re above
-if (cre .ge. 0.0_kind_real) then   !use modis re
-  re = cre
-endif
+!if (cre .ge. 0.0_kind_real) then   !use modis re
+!  re = cre
+!endif
+print *, "slingo ..1", re
 do nc = 1,22
+   print *, "slingo ..10", nc, re
   tauc = clwp*(asl(nc)+bsl(nc)/re)
+  print *, "slingo ..11", tauc
   oneomega = csl(nc) + dsl(nc)*re
   omega = 1.0_kind_real - oneomega
   g = esl(nc) + fsl(nc)*re
+  print *, "slingo ..12",g
   call slingomath(tauc, omega, g, rmu0, tcd(nc), tcs(nc))
 enddo
-
+print *, "slingo ..2"
 ! Slingo bands 23 and 24 fail due to re.  Workaround is to use mean ocean re
 do nc = 23,24
   tauc = clwp*(asl(nc)+bsl(nc)/remean)
@@ -96,8 +100,9 @@ do nc = 23,24
   omega = 1.0_kind_real - oneomega
   g = esl(nc) + fsl(nc)*remean
   call slingomath(tauc, omega, g, rmu0, tcd(nc), tcs(nc))
-enddo
 
+enddo
+print *, "slingo ..3"
 end subroutine slingo
 
 ! --------------------------------------------------------------------------------------------------

@@ -20,11 +20,12 @@ public rlwn
 contains
 
 ! -------------------------------------------------------------------------------------------------- 
-subroutine rlwn(km, lam, cosz, aw, bw, ac, bc, bpic, WtoQ, Ed, Es, h, phyto, excdom, exdet, cdet, pic, cdc, rlwnref)
+subroutine rlwn(km, lam, cosz, l_chan, aw, bw, ac, bc, bpic, WtoQ, Ed, Es, h, phyto, excdom, exdet, cdet, pic, cdc, rlwnref)
 
 ! Arguments 
 integer,              intent(in)  :: km
 real(kind=kind_real), intent(in)  :: cosz
+real(kind=kind_real), intent(in)  :: l_chan(:)
 integer,              intent(in)  :: lam(nlt)
 real(kind=kind_real), intent(in)  :: aw(nlt)
 real(kind=kind_real), intent(in)  :: bw(nlt)
@@ -77,12 +78,16 @@ Q = pi           !radiance:irradiance distribution function
 rmudl = 1.0/cos( asin( sin(acos(cosz))/rn ) )   !avg cosine direct (1 over)                                                                     
 rmud = min(rmudl,1.5)
 rmud = max(rmud,0.0)
-
+print *, "rlwn_mod..."
 call edeu(km, lam, aw, bw, ac, bc, bpic, WtoQ, Ed, Es, H, p, excdom, exdet, rmud, tirrq, cdomabsq, &
           avgq, sfceu)
 
-rn2 = rn*rn      !index refr squared  
-rlwnref = (1.0-rho)*sfceu/(rn2*Q)
+do i=1,size(l_chan)
+   ind=MINLOC(abs(lam-l_chan(i)))
+   print *, "rlwn_mod i", i, ind
+   rn2 = rn*rn      !index refr squared  
+   rlwnref(i) = (1.0-rho)*sfceu(ind)/(rn2*Q)
+enddo
 
 end subroutine rlwn
 
