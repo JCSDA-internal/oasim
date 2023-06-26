@@ -127,7 +127,6 @@ u1 = 7.0_kind_real/4.0_kind_real
 b0 = 3.0_kind_real/7.0_kind_real*(1.0_kind_real-g)
 bmu0 = 0.5_kind_real - 0.75_kind_real*rmu0*g/(1.0_kind_real+g)
 f = g*g
-
 u2 = u1*(1.0_kind_real-((1.0_kind_real-omega)/(7.0_kind_real*omega*b0)))
 u2 = max(u2,0.0_kind_real)
 alpha1 = u1*(1.0_kind_real-omega*(1.0_kind_real-b0))
@@ -137,28 +136,20 @@ alpha4 = (1.0_kind_real-f)*omega*(1.0_kind_real-bmu0)
 sqarg = alpha1*alpha1 - alpha2*alpha2
 sqarg = max(sqarg,1.0e-17_kind_real)
 eps = sqrt(sqarg)
-
 rm = alpha2/(alpha1+eps)
-
 e = exp(-eps*tauc)
-
 val1 = 1.0_kind_real - omega*f
 val2 = eps*eps*rmu0*rmu0
-
 rnum = val1*alpha3 - rmu0*(alpha1*alpha3+alpha2*alpha4)
-
 rden = val1*val1 - val2
-
 gama1 = rnum/rden
 rnum = -val1*alpha4 - rmu0*(alpha1*alpha4+alpha2*alpha3)
-
 gama2 = rnum/rden
 tdb = exp(-val1*tauc/rmu0)
 esq = e*e
 rmsq = rm*rm
 em = esq*rmsq
 val3 = 1.0_kind_real - em
-
 rdif = rm*(1.0_kind_real-esq)/val3
 tdif = e*(1.0_kind_real-rmsq)/val3
 tdir = -gama2*tdif - gama1*tdb*rdif + gama2*tdb
