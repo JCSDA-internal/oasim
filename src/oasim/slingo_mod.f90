@@ -78,14 +78,13 @@ remean = re
 
 ! Compute spectral cloud characteristics
 ! If MODIS re is available use it; otherwise use parameterized re above
+! I comment this part for now as it cause errors at some profiles, will revisit this later
 !if (cre .ge. 0.0_kind_real) then   !use modis re
 !  re = cre
 !endif
 
 do nc = 1,22
-
   tauc = clwp*(asl(nc)+bsl(nc)/re)
-
   oneomega = csl(nc) + dsl(nc)*re
   omega = 1.0_kind_real - oneomega
   g = esl(nc) + fsl(nc)*re
