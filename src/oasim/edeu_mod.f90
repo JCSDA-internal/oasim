@@ -74,7 +74,6 @@ real(kind=kind_real), parameter :: bdstar    = 0.00115_kind_real   !Gallegos et 
 real(kind=kind_real), parameter :: acdomstar = 2.98E-4_kind_real   !Yacobi et al., 2003 m2/mg
 real(kind=kind_real), parameter :: dmax      = 500.0_kind_real     !depth at which Ed = 0
 
-print *, "edeu_mod00..."
 !  Constants and initialize
 rmus = 1.0_kind_real/0.83_kind_real            !avg cosine diffuse down
 tirrq(:) = 0.0_kind_real
@@ -92,13 +91,14 @@ do nl = 1,nlt
   Estop(nl) = Es(nl)
   Ebot = Ebot + (Ed(nl)+Es(nl))
 enddo
-print *, "edeu_mod0..."
+
 !  Convert to quanta: divide by Avos # to get moles quanta; then mult by
 !  1E6 to get uM or uEin
 Ebotq = 0.0_kind_real
 do nl = 1,nlt
 !do nl = npst,npnd   !PAR range only 350-700nm
   Ebotq = Ebotq + (Edtop(nl)+Estop(nl))*WtoQ(nl)*1.0E6
+  !print *, "Ebotq nl", nl, Ebotq, Edtop(nl), Estop(nl), WtoQ(nl)
 enddo
 do k = 1,km
   if (H(k) < 1.0E10_kind_real)then
@@ -134,8 +134,9 @@ do k = 1,km
       bt = bw(nl) + bctot + bdet + bpic(nl)*Plte3
       bb = bbrw*bw(nl) + bbctot + bbrd*bdet + bbrpic*bpic(nl)*Plte3
       bb = max(bb,0.0002_kind_real)
+    
       if (Edtop(nl) .ge. 1.0E-4_kind_real .or. Estop(nl) .ge. 1.0E-4_kind_real) then
-        call radmod(zd, Edtop(nl), Estop(nl), rmud, a, bt, bb, Edz(nl,k), Esz(nl,k), Euz(nl,k), sfceun(nl,k))
+         call radmod(zd, Edtop(nl), Estop(nl), rmud, a, bt, bb, Edz(nl,k), Esz(nl,k), Euz(nl,k), sfceun(nl,k))
       endif
       Edtop(nl) = Edz(nl,k)
       Estop(nl) = Esz(nl,k)
@@ -164,7 +165,7 @@ enddo
 do k = 1,km
   avgq(k) = avgq(k) + tirrq(k)
 enddo
-print *, "rlwn_mod1..."
+
 end subroutine edeu
 
 ! --------------------------------------------------------------------------------------------------

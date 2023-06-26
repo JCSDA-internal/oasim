@@ -72,12 +72,12 @@ allocate(self%csl(ncld))
 allocate(self%dsl(ncld))
 allocate(self%esl(ncld))
 allocate(self%fsl(ncld))
-print *, "oasim_mod0..."
+
 ! Construct the oasim structures
 ! ------------------------------
 call setlte(self%lam, self%aw, self%bw, self%ac, self%bc, self%bpic, self%excdom, self%exdet, &
             self%WtoQ, self%wfac, data_directory)
-print *, "oasim_mod1..."
+
 call setsfclte(self%rad, self%pi2, self%lam, self%fobar, self%thray, self%oza, self%awv, self%ao, &
                self%aco2, self%am, self%vi, self%asl, self%bsl, self%csl, self%dsl, self%esl, &
                self%fsl, self%ica, data_directory)
@@ -131,7 +131,7 @@ real(kind=kind_real), intent(in)  :: dt           ! Time interval
 logical,              intent(in)  :: is_midnight  ! Number of model levels
 integer,              intent(in)  :: day_of_year  ! Day of the year
 real(kind=kind_real), intent(in)  :: cosz         ! Cosine of the solar zenith angle (1)
-real(kind=kind_real), intent(in)  :: l_chan       ! wavelength of channel list
+real(kind=kind_real), intent(in)  :: l_chan(:)    ! wavelength of channel list
 real(kind=kind_real), intent(in)  :: slp          ! Sea level pressure (hPa)
 real(kind=kind_real), intent(in)  :: wspd         ! Surface_wind_speed (m s-1)
 real(kind=kind_real), intent(in)  :: ozone        ! Ozone thickness (dobson units)
@@ -202,7 +202,7 @@ if (dh(1) < 1.0e10_kind_real .and. cosz > 0.0_kind_real) then
     relhum = rh
     ta = ta_in
     wa = wa_in
-print *, "oasim_mod2..."
+
     ! Spectral irradiance just above surface
     call sfcirr(self%lam, self%fobar, self%thray, self%oza, self%awv, self%ao, self%aco2, &
                 self%asl, self%bsl, self%csl, self%dsl, self%esl, self%fsl, self%ica, daycor, &
@@ -212,18 +212,17 @@ print *, "oasim_mod2..."
     ! Spectral irradiance just below surface
     sunz = acos(cosz)*self%rad
     call ocalbedo(self%rad, self%wfac, sunz, wspd, rod, ros)
-print *, "oasim_mod3..."
+
     do nl = 1,nlt
       ed(nl) = ed(nl) * (1.0_kind_real - rod(nl))
       es(nl) = es(nl) * (1.0_kind_real - ros(nl))
     enddo
 
     ! Spectral irradiance in the water column
-print *, "oasim_mod4..."
     call glight(km, is_midnight, cosz, self%lam, self%aw, self%bw, self%ac, self%bc, self%bpic, &
                 self%excdom, self%exdet, self%wtoq, ed, es, dh, phyto, cdet, pic, cdc, tirrq, &
                 cdomabsq, avgq, dt)
-print *, "oasim_mod5..."
+
     call rlwn(km, self%lam, cosz, l_chan, self%aw, self%bw, self%ac,self%bc, self%bpic, self%wtoq, ed, es, dh, &
          phyto, self%excdom, self%exdet, cdet, pic, cdc, rlwnref)
 

@@ -83,12 +83,12 @@ real(kind=kind_real), parameter :: p0 = 1013.25_kind_real
 
 ed = 0.0
 es = 0.0
-print *, "sfcirr_mod 0   "
+
 if (pres .lt. 0.0_kind_real .or. ws .lt. 0.0_kind_real .or. relhum .lt. 0.0_kind_real .or. &
     ozone .lt. 0.0_kind_real .or. wvapor .lt. 0.0_kind_real) then
   return
 endif
-print *, "sfcirr_mod 1   "
+
 !  Compute atmospheric path lengths (air mass); not pressure-corrected
 sunz = acos(cosunz)*57.29578_kind_real
 rtmp = (93.885_kind_real-sunz)**(-1.253_kind_real)
@@ -96,26 +96,26 @@ rmu0 = cosunz+0.15_kind_real*rtmp
 rm = 1.0_kind_real/rmu0
 otmp = (cosunz*cosunz+ozfac1)**0.5_kind_real
 rmo = ozfac2/otmp
-print *, "sfcirr_mod 2   "
+
 !  Compute pressure-corrected atmospheric path length (air mass)
 rmp = pres/p0*rm
 
 ! Loop to compute total irradiances at each grid point
 ! Compute direct and diffuse irradiance for a cloudy and non-cloudy atmosphere
 ! Account for gaseous absorption
-print *, "sfcirr_mod 3   "
+
 do nl = 1, nlt
 
   ! Ozone
   to = oza(nl)*ozone*0.001_kind_real   !optical thickness
   oarg = -to*rmo
-print *, "sfcirr_mod 4   ", nl
+
   ! Oxygen/gases
   ag = ao(nl) + aco2(nl)
   gtmp = (1.0_kind_real + 118.3_kind_real*ag*rmp)**0.45_kind_real
   gtmp2 = -1.41_kind_real*ag*rmp
   garg = gtmp2/gtmp
-print *, "sfcirr_mod 5   "
+
   ! Water Vapor
   wtmp = (1.0_kind_real+20.07_kind_real*awv(nl)*wvapor*rm)**0.45_kind_real
   wtmp2 = -0.2385_kind_real*awv(nl)*wvapor*rm
@@ -123,10 +123,10 @@ print *, "sfcirr_mod 5   "
   tgas(nl) = exp(oarg+garg+warg)
 
 enddo
-print *, "sfcirr_mod 6   "
+
 ! Compute clear sky transmittances
 call clrtrans(lam, thray, cosunz, rm, rmp, ws, relhum, am, vi, ta, wa, asym, tdclr, tsclr)
-print *, "sfcirr_mod 7   "
+
 do nl = 1,nlt
   foinc = fobar(nl)*daycor*cosunz
   ! Direct irradiance
@@ -137,10 +137,10 @@ do nl = 1,nlt
   edclr(nl) = edir
   esclr(nl) = edif
 enddo    !end clear nl loop
-print *, "sfcirr_mod 8   "
+
 !  Compute cloudy transmittances
 call slingo(asl, bsl, csl, dsl, esl, fsl, rmu0, cldtau, clwp, re, tdcld, tscld)
-print *, "sfcirr_mod 9   "
+
 do nl = 1,nlt
   foinc = fobar(nl)*daycor*cosunz
   ! Direct irradiance
@@ -151,14 +151,14 @@ do nl = 1,nlt
   edcld(nl) = edir
   escld(nl) = edif
 enddo   !end cloudy nl loop
-print *, "sfcirr_mod 10   "
+
 ! Sum clear and cloudy by percent
 ccov1 = cov*0.01_kind_real  !convert from percent to fraction
 do nl = 1,nlt
   ed(nl) = (1.0_kind_real-ccov1)*edclr(nl) + ccov1*edcld(nl)
   es(nl) = (1.0_kind_real-ccov1)*esclr(nl) + ccov1*escld(nl)
 enddo
-print *, "sfcirr_mod 11   "
+
 end subroutine sfcirr
 
 ! --------------------------------------------------------------------------------------------------
