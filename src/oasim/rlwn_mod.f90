@@ -42,7 +42,7 @@ real(kind=kind_real), intent(in)  :: phyto(km,nchl)
 real(kind=kind_real), intent(in)  :: cdet(km)
 real(kind=kind_real), intent(in)  :: pic(km)
 real(kind=kind_real), intent(in)  :: cdc(km)
-real(kind=kind_real), intent(out) :: rlwnref(nlt)
+real(kind=kind_real), intent(out) :: rlwnref(:)
 
 ! Locals                                                                                                                           
 real(kind=kind_real) :: pi, Q
@@ -78,13 +78,12 @@ Q = pi           !radiance:irradiance distribution function
 rmudl = 1.0/cos( asin( sin(acos(cosz))/rn ) )   !avg cosine direct (1 over)                                                                     
 rmud = min(rmudl,1.5)
 rmud = max(rmud,0.0)
-print *, "rlwn_mod...l_chan",l_chan, cosz
+
 call edeu(km, lam, aw, bw, ac, bc, bpic, WtoQ, Ed, Es, H, p, excdom, exdet, rmud, tirrq, cdomabsq, &
           avgq, sfceu)
 
 do i = 1,size(l_chan)
    ind = MINLOC(abs(lam-l_chan(i)), DIM=1)
-   print *, "rlwn_mod i", i, ind
    rn2 = rn*rn      !index refr squared  
    rlwnref(i) = (1.0-rho)*sfceu(ind)/(rn2*Q)
 enddo

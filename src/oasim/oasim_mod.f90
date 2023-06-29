@@ -14,7 +14,7 @@ use ocalbedo_mod,  only: ocalbedo
 use setlte_mod,    only: setlte
 use setsfclte_mod, only: setsfclte
 use sfcirr_mod,    only: sfcirr
-use rlwn_mod,    only: rlwn
+use rlwn_mod,      only: rlwn
 
 implicit none
 private
@@ -157,7 +157,7 @@ real(kind=kind_real), intent(in)  :: phaeo(km)    ! Phaeocystis concentration (m
 real(kind=kind_real), intent(out) :: tirrq(km)    ! Total irradiance (umol quanta m-2 s-1)
 real(kind=kind_real), intent(out) :: cdomabsq(km) ! Absorption of quanta by CDOM (umol quanta m-2 s-1)
 real(kind=kind_real), intent(out) :: avgq(km)     ! Average quantum irradiance (Average quantum irradiance)
-real(kind=kind_real), intent(out) :: rlwnref(nlt)     !
+real(kind=kind_real), intent(out) :: rlwnref(:)   ! Water leaving radiances
 
 ! Locals
 integer :: nl
