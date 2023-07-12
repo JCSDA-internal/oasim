@@ -66,11 +66,11 @@ p(:,ncs+3)  = pic
 p(:,ncs+4)  = cdc
 
 
-pi = dacos(-1.0_kind_real)
-rn = 1.341     !index of refraction
-rho = 0.021      !surface reflectance                                                                                    
-
-Q = pi           !radiance:irradiance distribution function 
+pi  = dacos(-1.0_kind_real)
+rn  = 1.341     !index of refraction
+rho = 0.021     !surface reflectance
+Q   = pi        !radiance:irradiance distribution function 
+rn2 = rn*rn     !index refr squared 
 
 ! Compute average cosine for direct irradiance in the water column given 
 !solar zenith angle (in radians) at surface.
@@ -84,7 +84,6 @@ call edeu(km, lam, aw, bw, ac, bc, bpic, WtoQ, Ed, Es, H, p, excdom, exdet, rmud
 
 do i = 1,size(l_chan)
    ind = MINLOC(abs(lam-l_chan(i)), DIM=1)
-   rn2 = rn*rn      !index refr squared  
    rlwnref(i) = (1.0-rho)*sfceu(ind)/(rn2*Q)
 enddo
 
