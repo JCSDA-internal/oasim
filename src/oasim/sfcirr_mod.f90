@@ -83,6 +83,7 @@ real(kind=kind_real), parameter :: p0 = 1013.25_kind_real
 
 ed = 0.0
 es = 0.0
+
 if (pres .lt. 0.0_kind_real .or. ws .lt. 0.0_kind_real .or. relhum .lt. 0.0_kind_real .or. &
     ozone .lt. 0.0_kind_real .or. wvapor .lt. 0.0_kind_real) then
   return
@@ -139,6 +140,7 @@ enddo    !end clear nl loop
 
 !  Compute cloudy transmittances
 call slingo(asl, bsl, csl, dsl, esl, fsl, rmu0, cldtau, clwp, re, tdcld, tscld)
+
 do nl = 1,nlt
   foinc = fobar(nl)*daycor*cosunz
   ! Direct irradiance

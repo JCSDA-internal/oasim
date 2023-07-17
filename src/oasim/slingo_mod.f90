@@ -78,14 +78,17 @@ remean = re
 
 ! Compute spectral cloud characteristics
 ! If MODIS re is available use it; otherwise use parameterized re above
-if (cre .ge. 0.0_kind_real) then   !use modis re
-  re = cre
-endif
+! I comment this part for now as it cause errors at some profiles, will revisit this later
+!if (cre .ge. 0.0_kind_real) then   !use modis re
+!  re = cre
+!endif
+
 do nc = 1,22
   tauc = clwp*(asl(nc)+bsl(nc)/re)
   oneomega = csl(nc) + dsl(nc)*re
   omega = 1.0_kind_real - oneomega
   g = esl(nc) + fsl(nc)*re
+
   call slingomath(tauc, omega, g, rmu0, tcd(nc), tcs(nc))
 enddo
 
@@ -95,7 +98,9 @@ do nc = 23,24
   oneomega = csl(nc) + dsl(nc)*remean
   omega = 1.0_kind_real - oneomega
   g = esl(nc) + fsl(nc)*remean
+
   call slingomath(tauc, omega, g, rmu0, tcd(nc), tcs(nc))
+
 enddo
 
 end subroutine slingo
@@ -117,7 +122,6 @@ real(kind=kind_real), intent(out) :: tcss
 ! Locals
 real(kind=kind_real) :: u1, b0, bmu0, f, U2, alpha1, alpha2, alpha3, alpha4, sqarg, eps, rm, e, val1
 real(kind=kind_real) :: val2, rnum, rden, gama1, gama2, tdb, esq, rmsq, em, val3, rdif, tdif, tdir
-
 
 u1 = 7.0_kind_real/4.0_kind_real
 b0 = 3.0_kind_real/7.0_kind_real*(1.0_kind_real-g)

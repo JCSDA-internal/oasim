@@ -20,11 +20,12 @@ public rlwn
 contains
 
 ! -------------------------------------------------------------------------------------------------- 
-subroutine rlwn(km, lam, cosz, aw, bw, ac, bc, bpic, WtoQ, Ed, Es, h, phyto, excdom, exdet, cdet, pic, cdc, rlwnref)
+subroutine rlwn(km, lam, cosz, l_chan, aw, bw, ac, bc, bpic, WtoQ, Ed, Es, h, phyto, excdom, exdet, cdet, pic, cdc, rlwnref)
 
 ! Arguments 
 integer,              intent(in)  :: km
 real(kind=kind_real), intent(in)  :: cosz
+real(kind=kind_real), intent(in)  :: l_chan(:)
 integer,              intent(in)  :: lam(nlt)
 real(kind=kind_real), intent(in)  :: aw(nlt)
 real(kind=kind_real), intent(in)  :: bw(nlt)
@@ -41,7 +42,7 @@ real(kind=kind_real), intent(in)  :: phyto(km,nchl)
 real(kind=kind_real), intent(in)  :: cdet(km)
 real(kind=kind_real), intent(in)  :: pic(km)
 real(kind=kind_real), intent(in)  :: cdc(km)
-real(kind=kind_real), intent(out) :: rlwnref(nlt)
+real(kind=kind_real), intent(out) :: rlwnref(:)
 
 ! Locals                                                                                                                           
 real(kind=kind_real) :: pi, Q
@@ -51,7 +52,7 @@ real(kind=kind_real) :: tirrq(km),p(km,ntyp)
 real(kind=kind_real) :: cdomabsq(km)
 real(kind=kind_real) :: avgq(km)
 real(kind=kind_real) :: sfceu(nlt)
-
+integer              :: i, ind
 
 p = 0.0_kind_real
 p(:,nnut+1) = phyto(:,1)
@@ -65,11 +66,11 @@ p(:,ncs+3)  = pic
 p(:,ncs+4)  = cdc
 
 
-pi = dacos(-1.0_kind_real)
-rn = 1.341     !index of refraction
-rho = 0.021      !surface reflectance                                                                                    
-
-Q = pi           !radiance:irradiance distribution function 
+pi  = dacos(-1.0_kind_real)
+rn  = 1.341     !index of refraction
+rho = 0.021     !surface reflectance
+Q   = pi        !radiance:irradiance distribution function 
+rn2 = rn*rn     !index refr squared 
 
 ! Compute average cosine for direct irradiance in the water column given 
 !solar zenith angle (in radians) at surface.
@@ -81,8 +82,10 @@ rmud = max(rmud,0.0)
 call edeu(km, lam, aw, bw, ac, bc, bpic, WtoQ, Ed, Es, H, p, excdom, exdet, rmud, tirrq, cdomabsq, &
           avgq, sfceu)
 
-rn2 = rn*rn      !index refr squared  
-rlwnref = (1.0-rho)*sfceu/(rn2*Q)
+do i = 1,size(l_chan)
+   ind = MINLOC(abs(lam-l_chan(i)), DIM=1)
+   rlwnref(i) = (1.0-rho)*sfceu(ind)/(rn2*Q)
+enddo
 
 end subroutine rlwn
 
