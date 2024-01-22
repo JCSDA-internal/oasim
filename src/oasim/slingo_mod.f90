@@ -20,13 +20,12 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine slingo(asl, bsl, csl, dsl, esl, fsl, rmu0, cldtau, clwp, cre, tcd, tcs)
+subroutine slingo(asl, bsl, csl, dsl, esl, fsl, rmu0, clwp, cre, tcd, tcs)
 
 !  Slingo's (1989) Delta-Eddington approximation for the two-
 !  stream equations applied to clouds.
 !  Inputs:
 !       rmu0    Kasten's approx for cosine of solar zenith angle
-!       cldtau  cloud optical thickness (at 0.6 um)
 !       clwp    liquid water path in cloud (g/m2)
 !       cre     cloud droplet effective radius (um)
 !  Outputs
@@ -45,7 +44,6 @@ real(kind=kind_real), intent(in)  :: dsl(ncld)
 real(kind=kind_real), intent(in)  :: esl(ncld)
 real(kind=kind_real), intent(in)  :: fsl(ncld)
 real(kind=kind_real), intent(in)  :: rmu0
-real(kind=kind_real), intent(in)  :: cldtau
 real(kind=kind_real), intent(in)  :: clwp
 real(kind=kind_real), intent(in)  :: cre
 real(kind=kind_real), intent(out) :: tcd(ncld)
@@ -59,29 +57,9 @@ real(kind=kind_real) :: re, remean, tauc, oneomega, omega, g
 Tcd = 0.0_kind_real
 Tcs = 0.0_kind_real
 
-!  Compute re as funtion of cldtau and LWP according to eq. 1 in
-!  Slingo.
-!   tau is derived at this wavelength (0.6 um) in the ISCCP data set
-!      re = clwp*bsl(9)/(cldtau - clwp*asl(9))
-!      re = min(re,15.0)  !block high re -- produces excessive direct
-!  Changes to the ISCCP-D2 data set make this relationship untenable
-!  (excessive re's are derived).  Instead choose a fixed re of 10 um
-!  for ocean (Kiehl et al., 1998 -- J. Clim.)
-!       re = 10.0
-!  Paper by Han et al., 1994 (J.Clim.) show mean ocean cloud radius
-!  = 11.8 um
-!       re = 11.8
-
 ! Mean of Kiehl and Han
 re = (10.0_kind_real+11.8_kind_real)/2.0_kind_real
 remean = re
-
-! Compute spectral cloud characteristics
-! If MODIS re is available use it; otherwise use parameterized re above
-! I comment this part for now as it cause errors at some profiles, will revisit this later
-!if (cre .ge. 0.0_kind_real) then   !use modis re
-!  re = cre
-!endif
 
 do nc = 1,22
   tauc = clwp*(asl(nc)+bsl(nc)/re)

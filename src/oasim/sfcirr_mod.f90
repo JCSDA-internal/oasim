@@ -24,7 +24,7 @@ contains
 
 subroutine sfcirr(lam, fobar, thray, oza, awv, ao, aco2, asl, bsl, csl, dsl, esl, fsl, ica, &
                   daycor, cosunz, pres, ws, ozone, wvapor, relhum, ta, wa, asym, am, vi, cov, &
-                  cldtau, clwp, re, ed, es)
+                  clwp, re, ed, es)
 
 ! Calls clrtrans to get cloud-free transmittance and slingo to
 ! get cloudy transmittance, then computes total irradiance in
@@ -63,7 +63,6 @@ real(kind=kind_real), intent(in)    :: asym(nlt)
 real(kind=kind_real), intent(in)    :: am
 real(kind=kind_real), intent(in)    :: vi
 real(kind=kind_real), intent(in)    :: cov
-real(kind=kind_real), intent(in)    :: cldtau
 real(kind=kind_real), intent(in)    :: clwp
 real(kind=kind_real), intent(in)    :: re
 real(kind=kind_real), intent(out)   :: ed(nlt)
@@ -139,7 +138,7 @@ do nl = 1,nlt
 enddo    !end clear nl loop
 
 !  Compute cloudy transmittances
-call slingo(asl, bsl, csl, dsl, esl, fsl, rmu0, cldtau, clwp, re, tdcld, tscld)
+call slingo(asl, bsl, csl, dsl, esl, fsl, rmu0, clwp, re, tdcld, tscld)
 
 do nl = 1,nlt
   foinc = fobar(nl)*daycor*cosunz
