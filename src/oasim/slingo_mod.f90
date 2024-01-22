@@ -20,14 +20,13 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine slingo(asl, bsl, csl, dsl, esl, fsl, rmu0, clwp, cre, tcd, tcs)
+subroutine slingo(asl, bsl, csl, dsl, esl, fsl, rmu0, clwp, tcd, tcs)
 
 !  Slingo's (1989) Delta-Eddington approximation for the two-
 !  stream equations applied to clouds.
 !  Inputs:
 !       rmu0    Kasten's approx for cosine of solar zenith angle
 !       clwp    liquid water path in cloud (g/m2)
-!       cre     cloud droplet effective radius (um)
 !  Outputs
 !       ica     index for translating cloud arrays to light arrays
 !       Tcd     spectral transmittance for downwelling direct irradiance
@@ -45,7 +44,6 @@ real(kind=kind_real), intent(in)  :: esl(ncld)
 real(kind=kind_real), intent(in)  :: fsl(ncld)
 real(kind=kind_real), intent(in)  :: rmu0
 real(kind=kind_real), intent(in)  :: clwp
-real(kind=kind_real), intent(in)  :: cre
 real(kind=kind_real), intent(out) :: tcd(ncld)
 real(kind=kind_real), intent(out) :: tcs(ncld)
 

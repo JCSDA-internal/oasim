@@ -121,7 +121,7 @@ end subroutine delete
 ! --------------------------------------------------------------------------------------------------
 
 subroutine run(self, km, dt, is_midnight, day_of_year, cosz, l_chan, slp, wspd, ozone, wvapor, rh, cov, &
-               clwp, cldre, ta_in, wa_in, asym, dh, cdet, pic, cdc, diatom, chloro, cyano, &
+               clwp, ta_in, wa_in, asym, dh, cdet, pic, cdc, diatom, chloro, cyano, &
                cocco, dino, phaeo, tirrq, cdomabsq, avgq, rlwnref)
 
 ! Arguments
@@ -139,7 +139,6 @@ real(kind=kind_real), intent(in)  :: wvapor       ! Water vapor (cm)
 real(kind=kind_real), intent(in)  :: rh           ! Relative humidity (percent)
 real(kind=kind_real), intent(in)  :: cov          ! Cloud cover (percent)
 real(kind=kind_real), intent(in)  :: clwp         ! Cloud liquid water path (dimensionless)
-real(kind=kind_real), intent(in)  :: cldre        ! Cloud droplet effective radius (dimensionless)
 real(kind=kind_real), intent(in)  :: ta_in(nlt)   ! Aerosol optical thickness (dimensionless)
 real(kind=kind_real), intent(in)  :: wa_in(nlt)   ! Single scattering albedo (dimensionless)
 real(kind=kind_real), intent(in)  :: asym(nlt)    ! Asymmetry parameter (dimensionless)
@@ -206,7 +205,7 @@ if (dh(1) < 1.0e10_kind_real .and. cosz > 0.0_kind_real) then
     call sfcirr(self%lam, self%fobar, self%thray, self%oza, self%awv, self%ao, self%aco2, &
                 self%asl, self%bsl, self%csl, self%dsl, self%esl, self%fsl, self%ica, daycor, &
                 cosz, slp, wspd, ozone, wvapor, relhum, ta, wa, asym, self%am, self%vi, cov, &
-                clwp, cldre, ed, es)
+                clwp, ed, es)
 
     ! Spectral irradiance just below surface
     sunz = acos(cosz)*self%rad
