@@ -43,7 +43,7 @@ jobs:
           container_version: 'latest'
           target_project_name: oasim
           unittest_tag: oasim
-          unittest_dependencies: gsw ioda oops saber ufo vader
+          test_dependencies: gsw ioda oops saber ufo vader
           test_script: run_tests.sh
           target_repo_dir: target_repository
           bundle_branch: develop
