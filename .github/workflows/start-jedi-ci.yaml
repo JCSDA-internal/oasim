@@ -43,8 +43,6 @@ jobs:
           container_version: 'latest'
           target_project_name: oasim
           unittest_tag: oasim
-          test_dependencies: gsw ioda oops saber ufo vader
           test_script: run_tests.sh
-          target_repo_dir: target_repository
           bundle_branch: develop
           jedi_ci_token: ${{ steps.generate-token.outputs.token }}
